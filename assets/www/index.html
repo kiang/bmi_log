@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>BMI log</title>
+        <link rel="stylesheet" type="text/css" media="all" href="css/jquery.mobile-1.0a4.1.min.css" />
+        <script type="text/javascript" charset="utf-8" src="js/phonegap.js" /><script type="text/javascript" charset="utf-8" src="js/jquery-1.5.2.min.js" /><script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.0a4.1.min.js" /><script type="text/javascript" charset="utf-8" src="js/jquery.tmpl.min.js" />
+        <script type="text/javascript" charset="utf-8">
+            var db, bmiListOffset = 0;
+            function onLoad(){
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+            
+            function dbError(err){
+                alert("Error processing SQL\n" + err.code + ": " + err.message);
+            }
+            
+            function onDeviceReady(){
+                db = window.openDatabase("bmi", "1.0", "bmi", 200000);
+                db.transaction(initTable, dbError);
+                db.transaction(queryDB, dbError);
+            }
+            
+            function initTable(tx){
+                tx.executeSql('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'bmi\'', [], function(tx, results){
+                    if (results.rows.length == 0) {
+                        tx.executeSql('CREATE TABLE IF NOT EXISTS bmi (id INTEGER PRIMARY KEY AUTOINCREMENT, user, weight, bmi, created)');
+                    }
+                }, dbError);
+            }
+            
+            function queryDB(tx){
+                tx.executeSql('SELECT * FROM bmi ORDER BY id DESC LIMIT ?,10', [bmiListOffset], querySuccess, dbError);
+                bmiListOffset += 10;
+            }
+            
+            function querySuccess(tx, results){
+                if(results.rows.length < 10) {
+                    $('a#moreButton').hide();
+                }
+                $.template('bmiTemplate', $('#bmiTemplate').html());
+                var contentHtml = '';
+                for (var i = 0; i < results.rows.length; i++) {
+                    contentHtml += $.tmpl('bmiTemplate', results.rows.item(i)).html();
+                }
+                $('#listBmis').append(contentHtml).listview('refresh');
+            }
+            
+            function modifyItem(obj){
+                var targetId = parseInt($(obj).parents('li:first').attr('id').replace('bmi-', ''));
+                if (targetId > 0) {
+                    alert(targetId);
+                }
+            }
+            
+            function deleteItem(obj){
+                var targetId = parseInt($(obj).parents('li:first').attr('id').replace('bmi-', ''));
+                if (targetId > 0) {
+                    var confirmed = confirm('確定要刪除？');
+                    if (true === confirmed) {
+                        db.transaction(function(tx){
+                            tx.executeSql('DELETE FROM bmi WHERE id = ?', [targetId]);
+                        }, dbError);
+                        $('li#bmi-' + targetId).remove();
+                    }
+                }
+                
+            }
+        </script>
+    </head>
+    <body onload="onLoad()">
+        <div data-role="page" data-theme="b">
+            <div data-role="header">
+                <h1>BMI log</h1>
+                <a href="ajax/bmi/add.html" data-icon="create" class="ui-btn-right">Add</a>
+            </div>
+            <div data-role="content">
+                <ul id="listBmis" data-role="listview" data-filter="true" data-split-icon="delete" data-split-theme="d">
+                </ul>
+                <hr />
+                <a href="#" data-role="button" onclick="db.transaction(queryDB, dbError); return false;" id="moreButton">More</a>
+                <a href="ajax/bmi/add.html" data-role="button" data-icon="create">Add</a>
+            </div>
+            <div data-role="footer">
+                <h4><a href="http://olc.tw/">JTC</a></h4>
+            </div>
+        </div>
+        <div style="display:none;" id="bmiTemplate">
+            <div>
+                <li id="bmi-${id}">
+                    <a href="#" onclick="modifyItem(this); return false;">${weight}</a>
+                    <a href="#" onclick="deleteItem(this); return false;">Delete</a>
+                </li>
+            </div>
+        </div>
+    </body>
+</html>

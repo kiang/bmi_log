@@ -52,8 +52,10 @@
                 db.transaction(function(tx){
                     tx.executeSql('SELECT user FROM user ORDER BY id ASC', [], function(tx, results){
                         var userHtml = '';
+                        var currentUser;
                         for (var i = 0; i < results.rows.length; i++) {
-                            userHtml += '<option>' + results.rows.item(i).user + '</option>';
+                            currentUser = results.rows.item(i).user;
+                            userHtml += '<option value="' + currentUser + '">' + currentUser + '</option>';
                         }
                         $('select#user').html(userHtml);
                     });

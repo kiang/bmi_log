@@ -26,7 +26,7 @@
             }
             
             function querySuccess(tx, results){
-                if(results.rows.length < 10) {
+                if (results.rows.length < 10) {
                     $('a#moreButton').hide();
                 }
                 $.template('bmiTemplate', $('#bmiTemplate').html());
@@ -34,7 +34,7 @@
                 for (var i = 0; i < results.rows.length; i++) {
                     contentHtml += $.tmpl('bmiTemplate', results.rows.item(i)).html();
                 }
-                $('#listBmis').append(contentHtml).listview('refresh');
+                $('ul#listBmis').append(contentHtml).listview('refresh');
             }
             
             function modifyItem(obj){
@@ -63,10 +63,10 @@
                 db.transaction(initTable, dbError);
                 $('div#bmiListPage').live('pageshow', function(){
                     bmiListOffset = 0;
-                    $('#listBmis').html('');
+                    $('ul#listBmis').html('');
                     db.transaction(queryDB, dbError);
-                });
-            })
+                }).trigger('pageshow');
+            });
         </script>
     </head>
     <body>
@@ -79,8 +79,7 @@
             <div data-role="content">
                 <ul id="listBmis" data-role="listview" data-filter="true" data-split-icon="delete" data-split-theme="d">
                 </ul>
-                <hr />
-                <a href="#" data-role="button" onclick="db.transaction(queryDB, dbError); return false;" id="moreButton">More</a>
+                <hr/><a href="#" data-role="button" onclick="db.transaction(queryDB, dbError); return false;" id="moreButton">More</a>
                 <a href="#ajax/bmi/add.html" data-role="button" data-icon="create">Add</a>
             </div>
             <div data-role="footer">

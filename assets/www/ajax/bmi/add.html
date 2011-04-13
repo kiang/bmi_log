@@ -52,6 +52,7 @@
                 db.transaction(function(tx){
                     tx.executeSql('SELECT user FROM user ORDER BY id ASC', [], function(tx, results){
                         if(results.rows.length <= 0) {
+                            navigator.notification.alert('Please add a user first.');
                             $.mobile.changePage('ajax/user/add.html', 'slide', true, true);
                         }
                         var userHtml = '';

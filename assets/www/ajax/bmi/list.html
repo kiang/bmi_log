@@ -16,7 +16,7 @@
     <div style="display:none;" id="bmiTemplate">
         <div>
             <li id="bmi-${id}">
-                <a href="#" onclick="modifyBmi(this); return false;">
+                <a href="#" onclick="return false;">
                     <h3>${user} - ${weight}kg</h3>
                     <p>BMI: ${bmi}</p>
                     <p>@ ${created}</p>
@@ -32,17 +32,10 @@
             bmiListOffset += 10;
         }
         
-        function modifyBmi(obj){
-            var targetId = parseInt($(obj).parents('li:first').attr('id').replace('bmi-', ''));
-            if (targetId > 0) {
-                alert(targetId);
-            }
-        }
-        
         function deleteBmi(obj){
             var targetId = parseInt($(obj).parents('li:first').attr('id').replace('bmi-', ''));
             if (targetId > 0) {
-                var confirmed = confirm('確定要刪除？');
+                var confirmed = confirm('Are you sure to delete it?');
                 if (true === confirmed) {
                     db.transaction(function(tx){
                         tx.executeSql('DELETE FROM bmi WHERE id = ?', [targetId]);

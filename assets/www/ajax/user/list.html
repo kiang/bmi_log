@@ -16,7 +16,7 @@
     <div style="display:none;" id="userTemplate">
         <div>
             <li id="user-${id}">
-                <a href="#" onclick="modifyUser(this); return false;">${user}</a>
+                <a href="#" onclick="return false;">${user}</a>
                 <a href="#" onclick="deleteUser(this); return false;">Delete</a>
             </li>
         </div>
@@ -28,17 +28,10 @@
             userListOffset += 10;
         }
         
-        function modifyUser(obj){
-            var targetId = parseInt($(obj).parents('li:first').attr('id').replace('user-', ''));
-            if (targetId > 0) {
-                alert(targetId);
-            }
-        }
-        
         function deleteUser(obj){
             var targetId = parseInt($(obj).parents('li:first').attr('id').replace('user-', ''));
             if (targetId > 0) {
-                var confirmed = confirm('確定要刪除？');
+                var confirmed = confirm('Are you sure to delete it?');
                 if (true === confirmed) {
                     db.transaction(function(tx){
                         tx.executeSql('DELETE FROM user WHERE id = ?', [targetId]);

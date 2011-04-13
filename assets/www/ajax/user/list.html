@@ -16,7 +16,10 @@
     <div style="display:none;" id="userTemplate">
         <div>
             <li id="user-${id}">
-                <a href="#" onclick="return false;">${user}</a>
+                <a href="#" onclick="return false;">
+                    <h3>${user}</h3>
+                    <p>Height: ${height}cm</p>
+                </a>
                 <a href="#" onclick="deleteUser(this); return false;">Delete</a>
             </li>
         </div>

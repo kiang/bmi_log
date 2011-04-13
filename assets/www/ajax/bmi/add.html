@@ -36,9 +36,9 @@
                 var height;
                 db.transaction(function(tx){
                     tx.executeSql('SELECT height FROM user WHERE user = ?', [user], function(tx, results){
-                        height = results.rows.item(0).height;
-                        var weight = $('#weight').val();
-                        var bmi = weight / ((height / 100) ^2);
+                        height = parseInt(results.rows.item(0).height) / 100;
+                        var weight = parseFloat($('#weight').val());
+                        var bmi = weight / (height * height);
                         bmi = Math.round(bmi * 100) / 100;
                         var data = [user, weight, bmi];
                         tx.executeSql('INSERT INTO bmi (user, weight, bmi, created) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'))', data, function(){

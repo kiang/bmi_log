@@ -51,6 +51,9 @@
             $('div#bmiAddPage').live('pageshow', function(){
                 db.transaction(function(tx){
                     tx.executeSql('SELECT user FROM user ORDER BY id ASC', [], function(tx, results){
+                        if(results.rows.length <= 0) {
+                            $.mobile.changePage('ajax/user/add.html', 'slide', true, true);
+                        }
                         var userHtml = '';
                         var currentUser;
                         for (var i = 0; i < results.rows.length; i++) {

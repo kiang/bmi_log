@@ -1,4 +1,4 @@
-<div data-role="page" data-theme="b">
+<div data-role="page" data-theme="b" id="bmiAddPage">
     <div data-role="header">
         <a href="#ajax/bmi/list.html" data-icon="back">Back</a>
         <h1>Add BMI log</h1>
@@ -6,18 +6,27 @@
     <div data-role="content">
         <form id="bmiForm" name="bmiForm">
             <div data-role="fieldcontain">
-                <label for="user">User:</label>
-                <input type="text" name="user" id="user" value="" />
+                <label for="user">
+                    User:
+                </label>
+                <select name="user" id="user">
+                </select>
             </div>
             <div data-role="fieldcontain">
-                <label for="weight">Weight:</label>
-                <input type="text" name="weight" id="weight" value="" />
+                <label for="weight">
+                    Weight(kg):
+                </label>
+                <input type="number" name="weight" id="weight" value="" />
             </div>
             <div data-role="fieldcontain">
-                <label for="created">Date:</label>
+                <label for="created">
+                    Date:
+                </label>
                 <input type="text" name="created" id="created" value="" />
             </div>
-            <button type="submit" name="submit">Submit</button>
+            <button type="submit" name="submit">
+                Submit
+            </button>
         </form>
     </div>
     <div data-role="footer">
@@ -26,17 +35,34 @@
     <script type="text/javascript" charset="utf-8">
         $(function(){
             $('form#bmiForm').submit(function(){
-                var submitedArray = [
-                    $('#user').val(),
-                    $('#weight').val(),
-                    $('#created').val()
-                ];
+                /*
+                 * Get user's height first
+                 */
+                var user = $('#user').val();
+                var height;
                 db.transaction(function(tx){
-                    return tx.executeSql('INSERT INTO bmi (user, weight, created) VALUES (?, ?, ?)', submitedArray, function(){
-                        $.mobile.changePage($('#bmiListPage'), 'slide', true, true);
+                    tx.executeSql('SELECT height FROM user WHERE user = ?', [user], function(tx, results){
+                        height = results.rows.item(0).height;
+                        var weight = $('#weight').val();
+                        var bmi = weight / ((height / 100) ^2);
+                        var data = [user, weight, bmi, $('#created').val()];
+                        tx.executeSql('INSERT INTO bmi (user, weight, bmi, created) VALUES (?, ?, ?, ?)', data, function(){
+                            $.mobile.changePage($('#bmiListPage'), 'slide', true, true);
+                        });
+                    });
+                });
+                return false;
+            });
+            $('div#bmiAddPage').live('pageshow', function(){
+                db.transaction(function(tx){
+                    tx.executeSql('SELECT user FROM user ORDER BY id ASC', [], function(tx, results){
+                        var userHtml = '';
+                        for (var i = 0; i < results.rows.length; i++) {
+                            userHtml += '<option>' + results.rows.item(i).user + '</option>';
+                        }
+                        $('select#user').html(userHtml);
                     });
                 }, dbError);
-                return false;
             });
         })
     </script>

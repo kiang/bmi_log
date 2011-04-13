@@ -1,4 +1,4 @@
-<div data-role="page" data-theme="b">
+<div data-role="page" data-theme="b" id="userListPage">
     <div data-role="header">
         <h1>Users</h1>
         <a href="add.html" data-icon="create" class="ui-btn-right">Add</a>
@@ -28,11 +28,11 @@
         }
         
         function modifyUser(obj){
-                var targetId = parseInt($(obj).parents('li:first').attr('id').replace('user-', ''));
-                if (targetId > 0) {
-                    alert(targetId);
-                }
+            var targetId = parseInt($(obj).parents('li:first').attr('id').replace('user-', ''));
+            if (targetId > 0) {
+                alert(targetId);
             }
+        }
         
         function deleteUser(obj){
             var targetId = parseInt($(obj).parents('li:first').attr('id').replace('user-', ''));
@@ -59,8 +59,13 @@
             $('#listUsers').append(contentHtml).listview('refresh');
         }
         
-        $(function(){
-            db.transaction(queryUserDB, dbError);
+        $(function() {
+            $('div#userListPage').live('pageshow', function() {
+                userListOffset = 0;
+                $('#listUsers').html('');
+                db.transaction(queryUserDB, dbError);
+            });
         })
+        
     </script>
 </div>

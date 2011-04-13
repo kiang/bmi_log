@@ -27,7 +27,7 @@
                 ];
                 db.transaction(function(tx){
                     return tx.executeSql('INSERT INTO user (user, height) VALUES (?, ?)', submitedArray, function(){
-                        location.href = '../../index.html';
+                        $.mobile.changePage($('#userListPage'), 'slide', true, true);
                     });
                 }, dbError);
                 return false;

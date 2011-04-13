@@ -27,7 +27,7 @@
                     $('#height').val()
                 ];
                 db.transaction(function(tx){
-                    return tx.executeSql('INSERT INTO user (user, height) VALUES (?, ?)', submitedArray, function(){
+                    tx.executeSql('INSERT INTO user (user, height) VALUES (?, ?)', submitedArray, function(){
                         $.mobile.changePage($('#userListPage'), 'slide', true, true);
                     });
                 }, dbError);

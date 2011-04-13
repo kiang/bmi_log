@@ -16,7 +16,11 @@
     <div style="display:none;" id="bmiTemplate">
         <div>
             <li id="bmi-${id}">
-                <a href="#" onclick="modifyBmi(this); return false;">${weight}</a>
+                <a href="#" onclick="modifyBmi(this); return false;">
+                    <h3>${user} - ${weight}kg</h3>
+                    <p>BMI: ${bmi}</p>
+                    <p class="ui-li-aside"><strong>${created}</strong></p>
+                </a>
                 <a href="#" onclick="deleteBmi(this); return false;">Delete</a>
             </li>
         </div>

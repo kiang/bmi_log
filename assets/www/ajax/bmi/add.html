@@ -18,12 +18,6 @@
                 </label>
                 <input type="number" name="weight" id="weight" value="" />
             </div>
-            <div data-role="fieldcontain">
-                <label for="created">
-                    Date:
-                </label>
-                <input type="text" name="created" id="created" value="" />
-            </div>
             <button type="submit" name="submit">
                 Submit
             </button>
@@ -45,8 +39,8 @@
                         height = results.rows.item(0).height;
                         var weight = $('#weight').val();
                         var bmi = weight / ((height / 100) ^2);
-                        var data = [user, weight, bmi, $('#created').val()];
-                        tx.executeSql('INSERT INTO bmi (user, weight, bmi, created) VALUES (?, ?, ?, ?)', data, function(){
+                        var data = [user, weight, bmi];
+                        tx.executeSql('INSERT INTO bmi (user, weight, bmi, created) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'))', data, function(){
                             $.mobile.changePage($('#bmiListPage'), 'slide', true, true);
                         });
                     });

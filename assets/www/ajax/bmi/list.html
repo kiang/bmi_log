@@ -1,0 +1,71 @@
+<div data-role="page" data-theme="b" id="bmiListPage">
+    <div data-role="header">
+        <h1>BMI log</h1>
+        <a href="#ajax/user/list.html" data-icon="gear">Users</a>
+        <a href="#ajax/bmi/add.html" data-icon="create" class="ui-btn-right">Add</a>
+    </div>
+    <div data-role="content">
+        <ul id="listBmis" data-role="listview" data-filter="true" data-split-icon="delete" data-split-theme="d">
+        </ul>
+        <hr/><a href="#" data-role="button" onclick="db.transaction(queryDB, dbError); return false;" id="moreButton">More</a>
+        <a href="#ajax/bmi/add.html" data-role="button" data-icon="create">Add</a>
+    </div>
+    <div data-role="footer">
+        <h4><a href="http://olc.tw/">JTC</a></h4>
+    </div>
+    <div style="display:none;" id="bmiTemplate">
+        <div>
+            <li id="bmi-${id}">
+                <a href="#" onclick="modifyBmi(this); return false;">${weight}</a>
+                <a href="#" onclick="deleteBmi(this); return false;">Delete</a>
+            </li>
+        </div>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        var bmiListOffset = 0;
+        function queryBmiDB(tx){
+            tx.executeSql('SELECT * FROM bmi ORDER BY id DESC LIMIT ?,10', [bmiListOffset], queryBmiSuccess, dbError);
+            bmiListOffset += 10;
+        }
+        
+        function modifyBmi(obj){
+            var targetId = parseInt($(obj).parents('li:first').attr('id').replace('bmi-', ''));
+            if (targetId > 0) {
+                alert(targetId);
+            }
+        }
+        
+        function deleteBmi(obj){
+            var targetId = parseInt($(obj).parents('li:first').attr('id').replace('bmi-', ''));
+            if (targetId > 0) {
+                var confirmed = confirm('確定要刪除？');
+                if (true === confirmed) {
+                    db.transaction(function(tx){
+                        tx.executeSql('DELETE FROM bmi WHERE id = ?', [targetId]);
+                    }, dbError);
+                    $('li#bmi-' + targetId).remove();
+                }
+            }
+        }
+        
+        function queryBmiSuccess(tx, results){
+            if (results.rows.length < 10) {
+                $('a#moreBmiButton').hide();
+            }
+            $.template('bmiTemplate', $('#bmiTemplate').html());
+            var contentHtml = '';
+            for (var i = 0; i < results.rows.length; i++) {
+                contentHtml += $.tmpl('bmiTemplate', results.rows.item(i)).html();
+            }
+            $('#listBmis').append(contentHtml).listview('refresh');
+        }
+        
+        $(function(){
+            $('div#bmiListPage').live('pageshow', function(){
+                bmiListOffset = 0;
+                $('#listBmis').html('');
+                db.transaction(queryBmiDB, dbError);
+            });
+        })
+    </script>
+</div>

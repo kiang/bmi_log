@@ -20,79 +20,14 @@
                 }, dbError);
             }
             
-            function queryDB(tx){
-                tx.executeSql('SELECT * FROM bmi ORDER BY id DESC LIMIT ?,10', [bmiListOffset], querySuccess, dbError);
-                bmiListOffset += 10;
-            }
-            
-            function querySuccess(tx, results){
-                if (results.rows.length < 10) {
-                    $('a#moreButton').hide();
-                }
-                $.template('bmiTemplate', $('#bmiTemplate').html());
-                var contentHtml = '';
-                for (var i = 0; i < results.rows.length; i++) {
-                    contentHtml += $.tmpl('bmiTemplate', results.rows.item(i)).html();
-                }
-                $('ul#listBmis').append(contentHtml).listview('refresh');
-            }
-            
-            function modifyItem(obj){
-                var targetId = parseInt($(obj).parents('li:first').attr('id').replace('bmi-', ''));
-                if (targetId > 0) {
-                    alert(targetId);
-                }
-            }
-            
-            function deleteItem(obj){
-                var targetId = parseInt($(obj).parents('li:first').attr('id').replace('bmi-', ''));
-                if (targetId > 0) {
-                    var confirmed = confirm('確定要刪除？');
-                    if (true === confirmed) {
-                        db.transaction(function(tx){
-                            tx.executeSql('DELETE FROM bmi WHERE id = ?', [targetId]);
-                        }, dbError);
-                        $('li#bmi-' + targetId).remove();
-                    }
-                }
-                
-            }
-            
             $(function(){
                 db = window.openDatabase("bmi", "1.0", "bmi", 200000);
                 db.transaction(initTable, dbError);
-                $('div#bmiListPage').live('pageshow', function(){
-                    bmiListOffset = 0;
-                    $('ul#listBmis').html('');
-                    db.transaction(queryDB, dbError);
-                }).trigger('pageshow');
+                $.mobile.changePage('ajax/bmi/list.html', 'slide', true, true);
             });
         </script>
     </head>
     <body>
-        <div data-role="page" data-theme="b" id="bmiListPage">
-            <div data-role="header">
-                <h1>BMI log</h1>
-                <a href="#ajax/user/list.html" data-icon="gear">Users</a>
-                <a href="#ajax/bmi/add.html" data-icon="create" class="ui-btn-right">Add</a>
-            </div>
-            <div data-role="content">
-                <ul id="listBmis" data-role="listview" data-filter="true" data-split-icon="delete" data-split-theme="d">
-                </ul>
-                <hr/><a href="#" data-role="button" onclick="db.transaction(queryDB, dbError); return false;" id="moreButton">More</a>
-                <a href="#ajax/bmi/add.html" data-role="button" data-icon="create">Add</a>
-            </div>
-            <div data-role="footer">
-                <h4><a href="http://olc.tw/">JTC</a></h4>
-            </div>
-        </div>
-        <div style="display:none;" id="bmiTemplate">
-            <div>
-                <li id="bmi-${id}">
-                    <a href="#" onclick="modifyItem(this); return false;">${weight}</a>
-                    <a href="#" onclick="deleteItem(this); return false;">Delete</a>
-                </li>
-            </div>
-        </div>
+        <div data-role="page" data-theme="b" id="mainPage"></div>
     </body>
 </html>

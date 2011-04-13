@@ -1,5 +1,6 @@
 <div data-role="page" data-theme="b">
     <div data-role="header">
+        <a href="#index.html" data-icon="back">Back</a>
         <h1>Add BMI log</h1>
     </div>
     <div data-role="content">
@@ -32,7 +33,7 @@
                 ];
                 db.transaction(function(tx){
                     return tx.executeSql('INSERT INTO bmi (user, weight, created) VALUES (?, ?, ?)', submitedArray, function(){
-                        location.href = '../../index.html';
+                        $.mobile.changePage($('#bmiListPage'), 'slide', true, true);
                     });
                 }, dbError);
                 return false;

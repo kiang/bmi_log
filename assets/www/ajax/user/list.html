@@ -1,13 +1,14 @@
 <div data-role="page" data-theme="b" id="userListPage">
     <div data-role="header">
+        <a href="#index.html" data-icon="back">Back</a>
         <h1>Users</h1>
-        <a href="add.html" data-icon="create" class="ui-btn-right">Add</a>
+        <a href="#ajax/user/add.html" data-icon="create" class="ui-btn-right">Add</a>
     </div>
     <div data-role="content">
         <ul id="listUsers" data-role="listview" data-filter="true" data-split-icon="delete" data-split-theme="d">
         </ul>
         <hr/><a href="#" data-role="button" onclick="db.transaction(queryDB, dbError); return false;" id="moreUserButton">More</a>
-        <a href="add.html" data-role="button" data-icon="create">Add</a>
+        <a href="#ajax/user/add.html" data-role="button" data-icon="create">Add</a>
     </div>
     <div data-role="footer">
         <h4><a href="http://olc.tw/">JTC</a></h4>

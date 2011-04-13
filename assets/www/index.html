@@ -6,19 +6,9 @@
         <link rel="stylesheet" type="text/css" media="all" href="css/jquery.mobile-1.0a4.1.min.css" />
         <script type="text/javascript" charset="utf-8" src="js/phonegap.js" /><script type="text/javascript" charset="utf-8" src="js/jquery-1.5.2.min.js" /><script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.0a4.1.min.js" /><script type="text/javascript" charset="utf-8" src="js/jquery.tmpl.min.js" />
         <script type="text/javascript" charset="utf-8">
-            var db, bmiListOffset = 0;
-            function onLoad(){
-                document.addEventListener("deviceready", onDeviceReady, false);
-            }
-            
+            var db, bmiListOffset;
             function dbError(err){
                 alert("Error processing SQL\n" + err.code + ": " + err.message);
-            }
-            
-            function onDeviceReady(){
-                db = window.openDatabase("bmi", "1.0", "bmi", 200000);
-                db.transaction(initTable, dbError);
-                db.transaction(queryDB, dbError);
             }
             
             function initTable(tx){
@@ -67,21 +57,31 @@
                 }
                 
             }
+            
+            $(function(){
+                db = window.openDatabase("bmi", "1.0", "bmi", 200000);
+                db.transaction(initTable, dbError);
+                $('div#bmiListPage').live('pageshow', function(){
+                    bmiListOffset = 0;
+                    $('#listBmis').html('');
+                    db.transaction(queryDB, dbError);
+                });
+            })
         </script>
     </head>
-    <body onload="onLoad()">
-        <div data-role="page" data-theme="b">
+    <body>
+        <div data-role="page" data-theme="b" id="bmiListPage">
             <div data-role="header">
                 <h1>BMI log</h1>
-                <a href="ajax/user/list.html" data-icon="gear">Users</a>
-                <a href="ajax/bmi/add.html" data-icon="create" class="ui-btn-right">Add</a>
+                <a href="#ajax/user/list.html" data-icon="gear">Users</a>
+                <a href="#ajax/bmi/add.html" data-icon="create" class="ui-btn-right">Add</a>
             </div>
             <div data-role="content">
                 <ul id="listBmis" data-role="listview" data-filter="true" data-split-icon="delete" data-split-theme="d">
                 </ul>
                 <hr />
                 <a href="#" data-role="button" onclick="db.transaction(queryDB, dbError); return false;" id="moreButton">More</a>
-                <a href="ajax/bmi/add.html" data-role="button" data-icon="create">Add</a>
+                <a href="#ajax/bmi/add.html" data-role="button" data-icon="create">Add</a>
             </div>
             <div data-role="footer">
                 <h4><a href="http://olc.tw/">JTC</a></h4>

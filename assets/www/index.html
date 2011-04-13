@@ -24,6 +24,7 @@
             function initTable(tx){
                 tx.executeSql('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'bmi\'', [], function(tx, results){
                     if (results.rows.length == 0) {
+                        tx.executeSql('CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, user, height)');
                         tx.executeSql('CREATE TABLE IF NOT EXISTS bmi (id INTEGER PRIMARY KEY AUTOINCREMENT, user, weight, bmi, created)');
                     }
                 }, dbError);
@@ -72,6 +73,7 @@
         <div data-role="page" data-theme="b">
             <div data-role="header">
                 <h1>BMI log</h1>
+                <a href="ajax/user/list.html" data-icon="gear">Users</a>
                 <a href="ajax/bmi/add.html" data-icon="create" class="ui-btn-right">Add</a>
             </div>
             <div data-role="content">

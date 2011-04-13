@@ -1,0 +1,66 @@
+<div data-role="page" data-theme="b">
+    <div data-role="header">
+        <h1>Users</h1>
+        <a href="add.html" data-icon="create" class="ui-btn-right">Add</a>
+    </div>
+    <div data-role="content">
+        <ul id="listUsers" data-role="listview" data-filter="true" data-split-icon="delete" data-split-theme="d">
+        </ul>
+        <hr/><a href="#" data-role="button" onclick="db.transaction(queryDB, dbError); return false;" id="moreUserButton">More</a>
+        <a href="add.html" data-role="button" data-icon="create">Add</a>
+    </div>
+    <div data-role="footer">
+        <h4><a href="http://olc.tw/">JTC</a></h4>
+    </div>
+    <div style="display:none;" id="userTemplate">
+        <div>
+            <li id="user-${id}">
+                <a href="#" onclick="modifyUser(this); return false;">${user}</a>
+                <a href="#" onclick="deleteUser(this); return false;">Delete</a>
+            </li>
+        </div>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        var userListOffset = 0;
+        function queryUserDB(tx){
+            tx.executeSql('SELECT * FROM user ORDER BY id DESC LIMIT ?,10', [userListOffset], queryUserSuccess, dbError);
+            userListOffset += 10;
+        }
+        
+        function modifyUser(obj){
+                var targetId = parseInt($(obj).parents('li:first').attr('id').replace('user-', ''));
+                if (targetId > 0) {
+                    alert(targetId);
+                }
+            }
+        
+        function deleteUser(obj){
+            var targetId = parseInt($(obj).parents('li:first').attr('id').replace('user-', ''));
+            if (targetId > 0) {
+                var confirmed = confirm('確定要刪除？');
+                if (true === confirmed) {
+                    db.transaction(function(tx){
+                        tx.executeSql('DELETE FROM user WHERE id = ?', [targetId]);
+                    }, dbError);
+                    $('li#user-' + targetId).remove();
+                }
+            }
+        }
+        
+        function queryUserSuccess(tx, results){
+            if (results.rows.length < 10) {
+                $('a#moreUserButton').hide();
+            }
+            $.template('userTemplate', $('#userTemplate').html());
+            var contentHtml = '';
+            for (var i = 0; i < results.rows.length; i++) {
+                contentHtml += $.tmpl('userTemplate', results.rows.item(i)).html();
+            }
+            $('#listUsers').append(contentHtml).listview('refresh');
+        }
+        
+        $(function(){
+            db.transaction(queryUserDB, dbError);
+        })
+    </script>
+</div>

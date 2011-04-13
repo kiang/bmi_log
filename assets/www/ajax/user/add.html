@@ -1,0 +1,37 @@
+<div data-role="page" data-theme="b">
+    <div data-role="header">
+        <h1>Add User</h1>
+    </div>
+    <div data-role="content">
+        <form id="userForm" name="userForm">
+            <div data-role="fieldcontain">
+                <label for="user">User:</label>
+                <input type="text" name="user" id="user" value="" />
+            </div>
+            <div data-role="fieldcontain">
+                <label for="height">Height:</label>
+                <input type="text" name="height" id="height" value="" />
+            </div>
+            <button type="submit" name="submit">Submit</button>
+        </form>
+    </div>
+    <div data-role="footer">
+        <h4><a href="http://olc.tw/">JTC</a></h4>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        $(function(){
+            $('form#userForm').submit(function(){
+                var submitedArray = [
+                    $('#user').val(),
+                    $('#height').val()
+                ];
+                db.transaction(function(tx){
+                    return tx.executeSql('INSERT INTO user (user, height) VALUES (?, ?)', submitedArray, function(){
+                        location.href = '../../index.html';
+                    });
+                }, dbError);
+                return false;
+            });
+        })
+    </script>
+</div>

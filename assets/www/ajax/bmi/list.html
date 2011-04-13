@@ -11,7 +11,7 @@
         <a href="#ajax/bmi/add.html" data-role="button" data-icon="create">Add</a>
     </div>
     <div data-role="footer">
-        <h4><a href="http://olc.tw/">JTC</a></h4>
+        <h4><a href="http://olc.tw/">olc.tw</a></h4>
     </div>
     <div style="display:none;" id="bmiTemplate">
         <div>
@@ -19,7 +19,7 @@
                 <a href="#" onclick="modifyBmi(this); return false;">
                     <h3>${user} - ${weight}kg</h3>
                     <p>BMI: ${bmi}</p>
-                    <p class="ui-li-aside"><strong>${created}</strong></p>
+                    <p>@ ${created}</p>
                 </a>
                 <a href="#" onclick="deleteBmi(this); return false;">Delete</a>
             </li>

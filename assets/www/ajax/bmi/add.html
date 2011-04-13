@@ -24,7 +24,7 @@
         </form>
     </div>
     <div data-role="footer">
-        <h4><a href="http://olc.tw/">JTC</a></h4>
+        <h4><a href="http://olc.tw/">olc.tw</a></h4>
     </div>
     <script type="text/javascript" charset="utf-8">
         $(function(){
@@ -39,6 +39,7 @@
                         height = results.rows.item(0).height;
                         var weight = $('#weight').val();
                         var bmi = weight / ((height / 100) ^2);
+                        bmi = Math.round(bmi * 100) / 100;
                         var data = [user, weight, bmi];
                         tx.executeSql('INSERT INTO bmi (user, weight, bmi, created) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'))', data, function(){
                             $.mobile.changePage($('#bmiListPage'), 'slide', true, true);

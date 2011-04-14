@@ -32,17 +32,19 @@
                 /*
                  * Get user's height first
                  */
-                var user = $('#user').val();
+                var fields = $(this).serializeArray();
                 var height;
                 db.transaction(function(tx){
-                    tx.executeSql('SELECT height FROM user WHERE user = ?', [user], function(tx, results){
+                    tx.executeSql('SELECT height FROM user WHERE user = ?', [fields[0].value], function(tx, results){
                         height = parseInt(results.rows.item(0).height) / 100;
-                        var weight = parseFloat($('#weight').val());
+                        var weight = parseFloat(fields[1].value);
                         var bmi = weight / (height * height);
                         bmi = Math.round(bmi * 100) / 100;
                         var data = [user, weight, bmi];
-                        tx.executeSql('INSERT INTO bmi (user, weight, bmi, created) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'))', data, function(){
-                            $.mobile.changePage($('#bmiListPage'), 'slide', true, true);
+                        tx.executeSql('INSERT INTO bmi (user, weight, bmi, created) VALUES (?, ?, ?, datetime(\'now\', \'localtime\'))', [
+                            fields[0].value, weight, bmi
+                        ], function(){
+                            $.mobile.changePage('ajax/bmi/list.html', 'slide', true, true);
                         });
                     });
                 });

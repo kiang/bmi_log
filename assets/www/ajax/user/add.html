@@ -7,10 +7,10 @@
         <form id="userForm" name="userForm">
             <div data-role="fieldcontain">
                 <label for="user">User:</label>
-                <input type="text" name="user" id="user" value="" />
+                <input type="text" name="user" id="user" value="" class="required" />
             </div>
             <fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
-                <input type="radio" name="gender" id="gender-m" value="m" />
+                <input type="radio" name="gender" id="gender-m" value="m" checked="checked" />
                 <label for="gender-m">
                     Male
                 </label>
@@ -21,7 +21,7 @@
             </fieldset>
             <div data-role="fieldcontain">
                 <label for="height">Height(cm):</label>
-                <input type="number" name="height" id="height" value="" />
+                <input type="number" name="height" id="height" value="" class="required" />
             </div>
             <button type="submit" name="submit">Submit</button>
         </form>
@@ -31,16 +31,16 @@
     </div>
     <script type="text/javascript" charset="utf-8">
         $(function(){
-            $('form#userForm').submit(function(){
-                var fields = $(this).serializeArray();
-                db.transaction(function(tx){
-                    tx.executeSql('INSERT INTO user (user, gender, height) VALUES (?, ?, ?)', [
-                        fields[0].value, fields[1].value, fields[2].value
-                    ], function(){
-                        $.mobile.changePage('ajax/user/list.html', 'slide', true, true);
-                    });
-                }, dbError);
-                return false;
+            $('form#userForm').validate({
+                submitHandler: function(){
+                    var fields = $('form#userForm').serializeArray();
+                    db.transaction(function(tx){
+                        tx.executeSql('INSERT INTO user (user, gender, height) VALUES (?, ?, ?)', [fields[0].value, fields[1].value, fields[2].value], function(){
+                            $.mobile.changePage('ajax/user/list.html', 'slide', true, true);
+                        });
+                    }, dbError);
+                    return false;
+                }
             });
         })
     </script>

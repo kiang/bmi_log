@@ -18,10 +18,7 @@
             <li id="bmiuser-${id}">
                 <a href="#" onclick="return false;"><h3>${weight}kg</h3>
                     <p>
-                        BMI: ${bmi}
-                    </p>
-                    <p>
-                        @ ${created}
+                        BMI: ${bmi} @ ${created}
                     </p>
                 </a>
                 <a href="#" onclick="deleteUserBmi(this); return false;">Delete</a>
@@ -44,7 +41,7 @@
             if(undefined === data['user']) {
                 $.mobile.changePage('ajax/bmi/list.html', 'slide', true, true);
             } else {
-                $('h1#bmiUserTitle').html(data['user'] + '\'s bmi logs');
+                $('h1#bmiUserTitle').html(data['user']);
                 if(bmiUserCurrent != data['user']) {
                     bmiUserCurrent = data['user'];
                     bmiUserListOffset = 0;

@@ -5,7 +5,7 @@
         <a href="#ajax/bmi/add.html" data-icon="create" class="ui-btn-right">Add</a>
     </div>
     <div data-role="content">
-        <ul id="listBmis" data-role="listview" data-filter="true" data-split-icon="delete" data-split-theme="d">
+        <ul id="listBmis" data-role="listview" data-filter="true">
         </ul>
         <hr/><a href="#" data-role="button" onclick="db.transaction(queryBmiDB, dbError); return false;" id="moreBmiButton">More</a>
         <a href="#ajax/bmi/add.html" data-role="button" data-icon="create">Add</a>
@@ -16,33 +16,19 @@
     <div style="display:none;" id="bmiTemplate">
         <div>
             <li id="bmi-${id}">
-                <a href="#" onclick="return false;">
+                <a href="#ajax/bmi/user.html?user=${user}">
                     <h3>${user} - ${weight}kg</h3>
                     <p>BMI: ${bmi}</p>
                     <p>@ ${created}</p>
                 </a>
-                <a href="#" onclick="deleteBmi(this); return false;">Delete</a>
             </li>
         </div>
     </div>
     <script type="text/javascript" charset="utf-8">
         var bmiListOffset = 0;
         function queryBmiDB(tx){
-            tx.executeSql('SELECT * FROM bmi ORDER BY id DESC LIMIT ?,10', [bmiListOffset], queryBmiSuccess, dbError);
+            tx.executeSql('SELECT * FROM bmi GROUP BY user ORDER BY id DESC LIMIT ?,10', [bmiListOffset], queryBmiSuccess, dbError);
             bmiListOffset += 10;
-        }
-        
-        function deleteBmi(obj){
-            var targetId = parseInt($(obj).parents('li:first').attr('id').replace('bmi-', ''));
-            if (targetId > 0) {
-                var confirmed = confirm('Are you sure to delete it?');
-                if (true === confirmed) {
-                    db.transaction(function(tx){
-                        tx.executeSql('DELETE FROM bmi WHERE id = ?', [targetId]);
-                    }, dbError);
-                    $('li#bmi-' + targetId).remove();
-                }
-            }
         }
         
         function queryBmiSuccess(tx, results){

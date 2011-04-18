@@ -1,0 +1,102 @@
+<div data-role="page" data-theme="b" id="bmiUserPage">
+    <div data-role="header">
+        <a href="#ajax/bmi/list.html" data-icon="back" data-direction="reverse">Back</a>
+        <h1 id="bmiUserTitle">BMI log</h1>
+        <a href="#ajax/bmi/add.html" data-icon="create" class="ui-btn-right">Add</a>
+    </div>
+    <div data-role="content">
+        <ul id="listUserBmis" data-role="listview" data-filter="true" data-split-icon="delete" data-split-theme="d">
+        </ul>
+        <hr/><a href="#" data-role="button" onclick="db.transaction(queryBmiUserDB, dbError); return false;" id="moreUserBmiButton">More</a>
+        <a href="#ajax/bmi/add.html" data-role="button" data-icon="create">Add</a>
+    </div>
+    <div data-role="footer">
+        <h4><a href="http://olc.tw/">olc.tw</a></h4>
+    </div>
+    <div style="display:none;" id="bmiUserTemplate">
+        <div>
+            <li id="bmiuser-${id}">
+                <a href="#" onclick="return false;"><h3>${weight}kg</h3>
+                    <p>
+                        BMI: ${bmi}
+                    </p>
+                    <p>
+                        @ ${created}
+                    </p>
+                </a>
+                <a href="#" onclick="deleteUserBmi(this); return false;">Delete</a>
+            </li>
+        </div>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        var bmiUserListOffset = 0;
+        var bmiUserCurrent = '';
+        function getUrlParameters(){
+            var map = [];
+            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value){
+                map[key] = value;
+            });
+            return map;
+        }
+        
+        function queryBmiUserDB(tx){
+            var data = getUrlParameters();
+            if(undefined === data['user']) {
+                $.mobile.changePage('ajax/bmi/list.html', 'slide', true, true);
+            } else {
+                $('h1#bmiUserTitle').html(data['user'] + '\'s bmi logs');
+                if(bmiUserCurrent != data['user']) {
+                    bmiUserCurrent = data['user'];
+                    bmiUserListOffset = 0;
+                }
+                tx.executeSql('SELECT * FROM bmi WHERE user = ? ORDER BY id DESC LIMIT ?,10', [bmiUserCurrent, bmiUserListOffset], queryUserBmiSuccess, dbError);
+                bmiUserListOffset += 10;
+            }
+        }
+        
+        function deleteUserBmi(obj){
+            var targetId = parseInt($(obj).parents('li:first').attr('id').replace('bmiuser-', ''));
+            if (targetId > 0) {
+                var confirmed = confirm('Are you sure to delete it?');
+                if (true === confirmed) {
+                    db.transaction(function(tx){
+                        tx.executeSql('DELETE FROM bmi WHERE id = ?', [targetId]);
+                    }, dbError);
+                    $('li#bmiuser-' + targetId).remove();
+                }
+            }
+        }
+        
+        function queryUserBmiSuccess(tx, results){
+            if (results.rows.length < 10) {
+                $('a#moreUserBmiButton').hide();
+            }
+            if (undefined === templateCached['bmi/user']) {
+                templateCached['bmi/user'] = false;
+            }
+            if(false === templateCached['bmi/user']) {
+                $.template('bmiUserTemplate', $('#bmiUserTemplate').html());
+                templateCached['bmi/user'] = true;
+            }
+            var contentHtml = '';
+            for (var i = 0; i < results.rows.length; i++) {
+                contentHtml += $.tmpl('bmiUserTemplate', results.rows.item(i)).html();
+            }
+            $('ul#listUserBmis').append(contentHtml).listview('refresh');
+        }
+        
+        $(function(){
+            if(undefined === pageLived['bmi/user']) {
+                pageLived['bmi/user'] = false;
+            }
+            if (false === pageLived['bmi/user']) {
+                pageLived['bmi/user'] = true;
+                $('div#bmiUserPage').live('pageshow', function(){
+                    bmiUserListOffset = 0;
+                    $('ul#listUserBmis').html('');
+                    db.transaction(queryBmiUserDB, dbError);
+                });
+            }
+        })
+    </script>
+</div>

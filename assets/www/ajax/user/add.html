@@ -31,17 +31,23 @@
     </div>
     <script type="text/javascript" charset="utf-8">
         $(function(){
-            $('form#userForm').validate({
-                submitHandler: function(){
-                    var fields = $('form#userForm').serializeArray();
-                    db.transaction(function(tx){
-                        tx.executeSql('INSERT INTO user (user, gender, height) VALUES (?, ?, ?)', [fields[0].value, fields[1].value, fields[2].value], function(){
-                            $.mobile.changePage('ajax/user/list.html', 'slide', true, true);
-                        });
-                    }, dbError);
-                    return false;
-                }
-            });
+            if (undefined === pageLived['user/add']) {
+                pageLived['user/add'] = false;
+            }
+            if (false === pageLived['user/add']) {
+                pageLived['user/add'] = true;
+                $('form#userForm').validate({
+                    submitHandler: function(){
+                        var fields = $('form#userForm').serializeArray();
+                        db.transaction(function(tx){
+                            tx.executeSql('INSERT INTO user (user, gender, height) VALUES (?, ?, ?)', [fields[0].value, fields[1].value, fields[2].value], function(){
+                                $.mobile.changePage('ajax/user/list.html', 'slide', true, true);
+                            });
+                        }, dbError);
+                        return false;
+                    }
+                });
+            }
         })
     </script>
 </div>

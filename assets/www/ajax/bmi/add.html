@@ -27,7 +27,12 @@
         <h4><a href="http://olc.tw/">olc.tw</a></h4>
     </div>
     <script type="text/javascript" charset="utf-8">
-        $(function(){
+    $(function(){
+        if (undefined === pageLived['bmi/add']) {
+            pageLived['bmi/add'] = false;
+        }
+        if (false === pageLived['bmi/add']) {
+            pageLived['bmi/add'] = true;
             $('form#bmiForm').validate({
                 submitHandler: function(){
                     var fields = $('form#bmiForm').serializeArray();
@@ -50,7 +55,7 @@
             $('div#bmiAddPage').live('pageshow', function(){
                 db.transaction(function(tx){
                     tx.executeSql('SELECT user FROM user ORDER BY id ASC', [], function(tx, results){
-                        if(results.rows.length <= 0) {
+                        if (results.rows.length <= 0) {
                             navigator.notification.alert('Please add a user first.');
                             $.mobile.changePage('ajax/user/add.html', 'slide', true, true);
                         }
@@ -64,6 +69,7 @@
                     });
                 }, dbError);
             });
-        })
+        }
+    })
     </script>
 </div>

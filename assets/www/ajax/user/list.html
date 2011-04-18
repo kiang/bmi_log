@@ -48,7 +48,13 @@
             if (results.rows.length < 10) {
                 $('a#moreUserButton').hide();
             }
-            $.template('userTemplate', $('#userTemplate').html());
+            if (undefined === templateCached['user/list']) {
+                templateCached['user/list'] = false;
+            }
+            if(false === templateCached['user/list']) {
+                $.template('userTemplate', $('#userTemplate').html());
+                templateCached['user/list'] = true;
+            }
             var contentHtml = '';
             for (var i = 0; i < results.rows.length; i++) {
                 contentHtml += $.tmpl('userTemplate', results.rows.item(i)).html();
@@ -56,12 +62,18 @@
             $('#listUsers').append(contentHtml).listview('refresh');
         }
         
-        $(function() {
-            $('div#userListPage').live('pageshow', function() {
-                userListOffset = 0;
-                $('#listUsers').html('');
-                db.transaction(queryUserDB, dbError);
-            });
+        $(function(){
+            if (undefined === pageLived['user/list']) {
+                pageLived['user/list'] = false;
+            }
+            if (false === pageLived['user/list']) {
+                pageLived['user/list'] = true;
+                $('div#userListPage').live('pageshow', function(){
+                    userListOffset = 0;
+                    $('#listUsers').html('');
+                    db.transaction(queryUserDB, dbError);
+                });
+            }
         })
         
     </script>

@@ -13,7 +13,7 @@
     <div data-role="footer">
         <h4><a href="http://olc.tw/">olc.tw</a></h4>
     </div>
-    <div style="display:none;" id="bmiTemplate">
+    <div style="display:none;" id="bmiListTemplate">
         <div>
             <li id="bmi-${id}">
                 <a href="#ajax/bmi/user.html?user=${user}">
@@ -35,20 +35,32 @@
             if (results.rows.length < 10) {
                 $('a#moreBmiButton').hide();
             }
-            $.template('bmiTemplate', $('#bmiTemplate').html());
+            if (undefined === templateCached['bmi/list']) {
+                templateCached['bmi/list'] = false;
+            }
+            if(false === templateCached['bmi/list']) {
+                $.template('bmiListTemplate', $('#bmiListTemplate').html());
+                templateCached['bmi/list'] = true;
+            }
             var contentHtml = '';
             for (var i = 0; i < results.rows.length; i++) {
-                contentHtml += $.tmpl('bmiTemplate', results.rows.item(i)).html();
+                contentHtml += $.tmpl('bmiListTemplate', results.rows.item(i)).html();
             }
             $('#listBmis').append(contentHtml).listview('refresh');
         }
         
         $(function(){
-            $('div#bmiListPage').live('pageshow', function(){
-                bmiListOffset = 0;
-                $('#listBmis').html('');
-                db.transaction(queryBmiDB, dbError);
-            });
+            if (undefined === pageLived['bmi/list']) {
+                pageLived['bmi/list'] = false;
+            }
+            if (false === pageLived['bmi/list']) {
+                pageLived['bmi/list'] = true;
+                $('div#bmiListPage').live('pageshow', function(){
+                    bmiListOffset = 0;
+                    $('#listBmis').html('');
+                    db.transaction(queryBmiDB, dbError);
+                });
+            }
         })
     </script>
 </div>

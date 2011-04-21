@@ -41,7 +41,7 @@
                 templateCached['bmi/list'] = false;
             }
             if(false === templateCached['bmi/list']) {
-                $.template('bmiListTemplate', $('#bmiListTemplate').html());
+                $.template('bmiListTemplate', $('div#bmiListTemplate').html());
                 templateCached['bmi/list'] = true;
             }
             if (results.rows.length > 0) {

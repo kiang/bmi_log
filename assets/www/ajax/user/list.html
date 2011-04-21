@@ -7,7 +7,7 @@
     <div data-role="content">
         <ul id="listUsers" data-role="listview" data-filter="true" data-split-icon="delete" data-split-theme="d">
         </ul>
-        <hr/><a href="#" data-role="button" onclick="db.transaction(queryDB, dbError); return false;" id="moreUserButton">More</a>
+        <hr/><a href="#" data-role="button" onclick="db.transaction(queryUserDB, dbError); return false;" id="moreUserButton">More</a>
         <a href="#ajax/user/add.html" data-role="button" data-icon="create">Add</a>
     </div>
     <div data-role="footer">
@@ -52,14 +52,14 @@
                 templateCached['user/list'] = false;
             }
             if(false === templateCached['user/list']) {
-                $.template('userTemplate', $('#userTemplate').html());
+                $.template('userTemplate', $('div#userTemplate').html());
                 templateCached['user/list'] = true;
             }
             var contentHtml = '';
             for (var i = 0; i < results.rows.length; i++) {
                 contentHtml += $.tmpl('userTemplate', results.rows.item(i)).html();
             }
-            $('#listUsers').append(contentHtml).listview('refresh');
+            $('ul#listUsers').append(contentHtml).listview('refresh');
         }
         
         $(function(){
@@ -70,7 +70,7 @@
                 pageLived['user/list'] = true;
                 $('div#userListPage').live('pageshow', function(){
                     userListOffset = 0;
-                    $('#listUsers').html('');
+                    $('div#listUsers').html('');
                     db.transaction(queryUserDB, dbError);
                 });
             }

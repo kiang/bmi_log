@@ -72,7 +72,7 @@
                 templateCached['bmi/user'] = false;
             }
             if(false === templateCached['bmi/user']) {
-                $.template('bmiUserTemplate', $('#bmiUserTemplate').html());
+                $.template('bmiUserTemplate', $('div#bmiUserTemplate').html());
                 templateCached['bmi/user'] = true;
             }
             var contentHtml = '';

@@ -26,6 +26,8 @@
     </div>
     <script type="text/javascript" charset="utf-8">
         var bmiListOffset = 0;
+        var plotCount = 1;
+        var plotId;
         function queryBmiDB(tx){
             tx.executeSql('SELECT * FROM bmi GROUP BY user ORDER BY id DESC LIMIT ?,10', [bmiListOffset], queryBmiSuccess, dbError);
             bmiListOffset += 10;
@@ -42,11 +44,51 @@
                 $.template('bmiListTemplate', $('#bmiListTemplate').html());
                 templateCached['bmi/list'] = true;
             }
-            var contentHtml = '';
-            for (var i = 0; i < results.rows.length; i++) {
-                contentHtml += $.tmpl('bmiListTemplate', results.rows.item(i)).html();
+            if (results.rows.length > 0) {
+                var contentHtml = '';
+                var sqlString = 'SELECT * FROM bmi WHERE (';
+                for (var i = 0; i < results.rows.length; i++) {
+                    var currentRecord = results.rows.item(i);
+                    sqlString += ' user = \'' + currentRecord.user + '\' OR';
+                    contentHtml += $.tmpl('bmiListTemplate', currentRecord).html();
+                }
+                sqlString = sqlString.substr(0, sqlString.length - 2);
+                sqlString += ') AND created > date(\'now\', \'-1 month\') ORDER BY user ASC, created DESC';
+                plotId = 'plot' + plotCount;
+                ++plotCount;
+                $('#listBmis').append(contentHtml).listview('refresh');
+                $('#listBmis').prepend('<div id="' + plotId + '" style="height:300px;"></div>');
+                tx.executeSql(sqlString, [], queryDrawing, dbError);
             }
-            $('#listBmis').append(contentHtml).listview('refresh');
+        }
+        
+        function queryDrawing(tx, results) {
+            var plotData = [];
+            var plotDataIndexCount = 0;
+            var plotDataIndex = [];
+            for (var i = 0; i < results.rows.length; i++) {
+                var currentRecord = results.rows.item(i);
+                var d = new Date(currentRecord.created);
+                if(undefined === plotDataIndex[currentRecord.user]) {
+                    plotDataIndex[currentRecord.user] = plotDataIndexCount;
+                    plotData[plotDataIndexCount] = {
+                        data: [],
+                        label: currentRecord.user
+                    };
+                    ++plotDataIndexCount;
+                }
+                var currentIndex = plotDataIndex[currentRecord.user];
+                plotData[currentIndex].data.push([d.getTime(), currentRecord.weight]);
+            }
+            $('div#' + plotId).css('width', $('div#bmiListPage').width() - 20);
+            
+            var options = {
+                xaxis: {
+                    mode: 'time',
+                    timeformat: '%m/%d'
+                }
+            };
+            var plot = $.plot($('div#' + plotId), plotData, options);
         }
         
         $(function(){

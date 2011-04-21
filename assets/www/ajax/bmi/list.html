@@ -56,8 +56,8 @@
                 sqlString += ') AND created > date(\'now\', \'-1 month\') ORDER BY user ASC, created DESC';
                 plotId = 'plot' + plotCount;
                 ++plotCount;
-                $('#listBmis').append(contentHtml).listview('refresh');
-                $('#listBmis').prepend('<div id="' + plotId + '" style="height:300px;"></div>');
+                $('ul#listBmis').append(contentHtml).listview('refresh');
+                $('ul#listBmis').prepend('<div id="' + plotId + '" style="height:300px;"></div>');
                 tx.executeSql(sqlString, [], queryDrawing, dbError);
             }
         }
@@ -99,7 +99,7 @@
                 pageLived['bmi/list'] = true;
                 $('div#bmiListPage').live('pageshow', function(){
                     bmiListOffset = 0;
-                    $('#listBmis').html('');
+                    $('ul#listBmis').html('');
                     db.transaction(queryBmiDB, dbError);
                 });
             }
